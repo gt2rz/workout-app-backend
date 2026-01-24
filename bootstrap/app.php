@@ -1,0 +1,35 @@
+<?php
+
+use App\Http\Middleware\EnsureApiKeyIsValid;
+use App\Http\Middleware\ForceHttps;
+use Illuminate\Foundation\Application;
+use Illuminate\Foundation\Configuration\Exceptions;
+use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Support\Facades\Route;
+
+return Application::configure(basePath: dirname(__DIR__))
+    ->withRouting(
+        web: __DIR__.'/../routes/web.php',
+        api: __DIR__.'/../routes/api.php',
+        commands: __DIR__.'/../routes/console.php',
+        health: '/up',
+        then: function () {
+            Route::prefix('api/v1')->middleware([EnsureApiKeyIsValid::class])
+                ->group(function () {
+                    Route::middleware([ForceHttps::class])
+                        ->prefix('auth')
+                        ->group(base_path('routes/modules/auth.php'));
+                });
+        },
+    )
+    ->withMiddleware(function (Middleware $middleware): void {
+        // Forzar HTTPS en todas las solicitudes (excepto en entorno local)
+        // $middleware->append(ForceHttps::class);
+
+        // Esto asegura que Laravel confíe en los headers de HTTPS
+        // enviados por proxies como Cloudflare o Nginx
+        $middleware->trustProxies(at: '*');
+    })
+    ->withExceptions(function (Exceptions $exceptions): void {
+        //
+    })->create();

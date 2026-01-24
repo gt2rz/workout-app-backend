@@ -1,0 +1,8 @@
+{
+    "agents": [
+        "cursor",
+        "gemini",
+        "opencode"
+    ],
+    "guidelines": []
+}
