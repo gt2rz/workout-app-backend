@@ -2,7 +2,7 @@ services:
   app:
     # Asegúrate de poner el nombre de tu usuario/repo en minúsculas
     image: ghcr.io/gt2rz/workout-app-backend/app:latest
-    container_name: laravel_app
+    container_name: workout-app-backend_app
     restart: unless-stopped
     working_dir: /var/www/html
     environment:
@@ -32,7 +32,7 @@ services:
 
   db:
     image: postgres:16-alpine
-    container_name: laravel_db
+    container_name: workout-app-backend_db
     restart: unless-stopped
     environment:
       POSTGRES_DB: ${DB_DATABASE}
@@ -51,7 +51,7 @@ services:
 
   redis:
     image: redis:7-alpine
-    container_name: laravel_redis
+    container_name: lworkout-app-backend_redis
     restart: unless-stopped
     # Se añade la lógica de password si existe, sino inicia sin ella
     command: >
