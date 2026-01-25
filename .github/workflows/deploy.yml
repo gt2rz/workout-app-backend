@@ -63,6 +63,9 @@ jobs:
       CONTAINER_NAME: "workout_app"
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
       - name: Copy docker-compose via SCP
         uses: appleboy/scp-action@v0.1.7
         with:
