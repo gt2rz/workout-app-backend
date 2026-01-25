@@ -29,7 +29,7 @@ jobs:
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          password: ${{ secrets.GHCR_TOKEN }}
 
       - name: Extract metadata
         id: meta
@@ -63,6 +63,14 @@ jobs:
       CONTAINER_NAME: "workout_app"
 
     steps:
+      - name: Copy docker-compose via SCP
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "docker-compose.yml"
+          target: "${{ secrets.PROJECT_PATH }}"
       - name: Deploy to VPS via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -71,33 +79,45 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           timeout: 60s             # Aumentado a 60 segundos
           command_timeout: 10m     # Para dar tiempo a las migraciones de Laravel 12
-          debug: true  
+          debug: true
           script: |
-            echo "Iniciando despliegue en el servidor..."
+            # 1. Crear carpeta del proyecto si no existe
+            mkdir -p ${{ secrets.PROJECT_PATH }}
+            cd ${{ secrets.PROJECT_PATH }}
 
-            # Define el nombre completo de la imagen en el VPS
-            IMAGE_NAME=ghcr.io/${{ github.repository }}:latest
-            CONTAINER_NAME=${{ env.CONTAINER_NAME }}
+            # 2. Generar el archivo .env DINÁMICAMENTE usando los secretos de GitHub
+            # Usamos 'cat <<EOF' para escribir todas las variables de golpe
+            cat <<EOF > .env
+            APP_NAME=Laravel
+            APP_ENV=production
+            APP_KEY=${{ secrets.APP_KEY }}
+            APP_DEBUG=false
+            APP_URL=http://${{ secrets.SSH_HOST }}
 
-            # Login usando el PAT (No el GITHUB_TOKEN temporal)
-            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+            DB_CONNECTION=pgsql
+            DB_HOST=db
+            DB_PORT=5432
+            DB_DATABASE=${{ secrets.DB_DATABASE }}
+            DB_USERNAME=${{ secrets.DB_USERNAME }}
+            DB_PASSWORD=${{ secrets.DB_PASSWORD }}
 
-            # Pull solo de la imagen de la app (el resto son oficiales)
+            REDIS_HOST=redis
+            REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}
+            REDIS_PORT=6379
+            EOF
+
+            # 3. Autenticar en GHCR
+            echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+            # 4. Pull y despliegue (Docker usará el .env que acabamos de crear)
             docker compose pull app
-
-            # Backup de seguridad (usando variables del .env local del server)
-            # # Exportamos PGPASSWORD para que pg_dump no pida pass
-            # export $(grep -v '^#' .env | xargs)
-            # docker compose exec -T db sh -c "PGPASSWORD=$DB_PASSWORD pg_dump -U $DB_USERNAME $DB_DATABASE" > backup_latest.sql || echo "Backup skip"
-
-            # 4. Actualizar contenedores (Sin down/up para evitar downtime largo)
-            # up -d detecta cambios en la imagen y recrea solo lo necesario
             docker compose up -d --remove-orphans
 
-            # 5. Tareas post-despliegue (Laravel 12)
-            # Usamos 'optimize' que es más eficiente que hacer 3 caches por separado
+            # 5. Comandos de Laravel 12
             docker compose exec -T app php artisan optimize
             docker compose exec -T app php artisan migrate --force
+
+            echo "🚀 Despliegue con variables de entorno completado."
 
             # 6. Limpieza
             docker image prune -f
