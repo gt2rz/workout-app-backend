@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Api\V1\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -26,7 +27,14 @@ class AuthController extends Controller
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
-        return response()->json(['access_token' => $token, 'token_type' => 'Bearer']);
+        return (new UserResource($user))
+        ->additional([
+            'status' => 'success',
+            'meta' => [
+                'access_token' => $token,
+                'token_type' => 'Bearer',
+            ]
+        ]);
     }
 
     // LOGIN
@@ -47,12 +55,22 @@ class AuthController extends Controller
 
         $token = $user->createToken($request->device)->plainTextToken;
 
-        return response()->json(['access_token' => $token, 'token_type' => 'Bearer']);
+        return (new UserResource($user))
+        ->additional([
+            'status' => 'success',
+            'meta' => [
+                'access_token' => $token,
+                'token_type' => 'Bearer',
+            ]
+        ]);
     }
 
     // LOGOUT
     public function logout(Request $request) {
         $request->user()->currentAccessToken()->delete();
-        return response()->json(['message' => 'Sesión cerrada']);
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Sesión cerrada'
+        ]);
     }
 }
