@@ -65,7 +65,7 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        
+
       - name: Copy docker-compose via SCP
         uses: appleboy/scp-action@v0.1.7
         with:
@@ -74,6 +74,9 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: "docker-compose.yml"
           target: "${{ secrets.PROJECT_PATH }}"
+          strip_components: 0 # Asegura que solo copie el archivo en la raíz del target
+          overwrite: true      # Permite sobrescribir el archivo si ya existe
+          
       - name: Deploy to VPS via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
