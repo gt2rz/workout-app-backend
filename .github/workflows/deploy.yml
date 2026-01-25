@@ -66,17 +66,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Copy docker-compose via SCP
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "docker-compose.yml"
-          target: "${{ secrets.PROJECT_PATH }}"
-          strip_components: 0 # Asegura que solo copie el archivo en la raíz del target
-          overwrite: true      # Permite sobrescribir el archivo si ya existe
-          
+      # - name: Copy docker-compose via SCP
+      #   uses: appleboy/scp-action@v0.1.7
+      #   with:
+      #     host: ${{ secrets.SSH_HOST }}
+      #     username: ${{ secrets.SSH_USER }}
+      #     key: ${{ secrets.SSH_PRIVATE_KEY }}
+      #     source: "docker-compose.yml"
+      #     target: "${{ secrets.PROJECT_PATH }}"
+      #     overwrite: true # Forzar sobreescritura
+      #     rm: false # No borres toda la carpeta antes de copiar (importante por el .env)
+
       - name: Deploy to VPS via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -110,6 +110,89 @@ jobs:
             REDIS_HOST=redis
             REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}
             REDIS_PORT=6379
+            EOF
+
+            # Escribir el docker-compose.yml directamente desde el Action
+            # Usamos comillas simples en 'EOF' para que no intente expandir variables locales de GitHub
+            cat <<'EOF' > docker-compose.yml
+            services:
+              app:
+                # Asegúrate de poner el nombre de tu usuario/repo en minúsculas
+                image: ghcr.io/gt2rz/workout-app-backend/app:latest
+                container_name: laravel_app
+                restart: unless-stopped
+                working_dir: /var/www/html
+                environment:
+                  - APP_ENV=${APP_ENV:-production}
+                  - APP_KEY=${APP_KEY}
+                  - APP_DEBUG=${APP_DEBUG:-false}
+                  - DB_CONNECTION=pgsql
+                  - DB_HOST=db
+                  - DB_PORT=5432
+                  - DB_DATABASE=${DB_DATABASE}
+                  - DB_USERNAME=${DB_USERNAME}
+                  - DB_PASSWORD=${DB_PASSWORD}
+                  - REDIS_HOST=redis
+                  - REDIS_PORT=6379
+                  - REDIS_PASSWORD=${REDIS_PASSWORD} # IMPORTANTE: Añadido para coincidir con el servicio redis
+                volumes:
+                  - storage_data:/var/www/html/storage
+                networks:
+                  - laravel
+                ports:
+                  - "8000:80" # Cambiado a 8000 para que Hostinger/Nginx lo use como upstream
+                depends_on:
+                  db:
+                    condition: service_healthy
+                  redis:
+                    condition: service_healthy
+
+              db:
+                image: postgres:16-alpine
+                container_name: laravel_db
+                restart: unless-stopped
+                environment:
+                  POSTGRES_DB: ${DB_DATABASE}
+                  POSTGRES_USER: ${DB_USERNAME}
+                  POSTGRES_PASSWORD: ${DB_PASSWORD}
+                volumes:
+                  - postgres_data:/var/lib/postgresql/data
+                networks:
+                  - laravel
+                # Eliminado puerto 5432 para que la DB sea privada interna
+                healthcheck:
+                  test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+                  interval: 10s
+                  timeout: 5s
+                  retries: 5
+
+              redis:
+                image: redis:7-alpine
+                container_name: laravel_redis
+                restart: unless-stopped
+                # Se añade la lógica de password si existe, sino inicia sin ella
+                command: >
+                  sh -c "redis-server --appendonly yes
+                  ${REDIS_PASSWORD:+--requirepass $REDIS_PASSWORD}"
+                volumes:
+                  - redis_data:/data
+                networks:
+                  - laravel
+                healthcheck:
+                  test: ["CMD", "redis-cli", "ping"]
+                  interval: 10s
+                  timeout: 3s
+                  retries: 5
+
+            networks:
+              laravel:
+                driver: bridge
+
+            volumes:
+              postgres_data:
+              redis_data:
+              storage_data:
+
             EOF
 
             # 3. Autenticar en GHCR
