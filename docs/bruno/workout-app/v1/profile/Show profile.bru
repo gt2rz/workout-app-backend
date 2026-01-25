@@ -1,0 +1,24 @@
+meta {
+  name: Show profile
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{base_url}}api/v1/profile
+  body: none
+  auth: bearer
+}
+
+headers {
+  X-API-KEY: default_api_key_value
+}
+
+auth:bearer {
+  token: {{access_token}}
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

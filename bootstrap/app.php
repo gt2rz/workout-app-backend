@@ -5,7 +5,9 @@ use App\Http\Middleware\ForceHttps;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Cache\RateLimiting\Limit;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -14,11 +16,21 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
         then: function () {
-            Route::prefix('api/v1')->middleware([EnsureApiKeyIsValid::class])
+            // Definir el rate limiter 'api' para Laravel 12
+            RateLimiter::for('api', function ($request) {
+                return Limit::perMinute(60)->by(optional($request->user())->id ?: $request->ip());
+            });
+
+            Route::prefix('api/v1')->middleware([EnsureApiKeyIsValid::class, ForceHttps::class, 'throttle:api'])
                 ->group(function () {
-                    Route::middleware([ForceHttps::class])
-                        ->prefix('auth')
+                    Route::prefix('auth')
                         ->group(base_path('routes/modules/auth.php'));
+
+                    Route::middleware('auth:sanctum')
+                        ->group(function () {
+                            Route::prefix('profile')
+                                ->group(base_path('routes/modules/profile.php'));
+                        });
                 });
         },
     )
