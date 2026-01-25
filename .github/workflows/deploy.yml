@@ -123,7 +123,7 @@ jobs:
             services:
               app:
                 # Asegúrate de poner el nombre de tu usuario/repo en minúsculas
-                image: ghcr.io/gt2rz/workout-app-backend/app:latest
+                image: ghcr.io/gt2rz/workout-app-backend:latest
                 container_name: laravel_app
                 restart: unless-stopped
                 working_dir: /var/www/html
