@@ -14,7 +14,10 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 WORKDIR /app
 COPY composer.json composer.lock ./
-RUN composer install --no-scripts --no-autoloader --prefer-dist --no-dev
+
+# Usa un montaje de caché para la carpeta de Composer, esto hace que las instalaciones sean más rápidas al reutilizar dependencias ya descargadas
+RUN --mount=type=cache,target=/root/.composer/cache \
+    composer install --no-scripts --no-autoloader --prefer-dist --no-dev
 
 # Etapa 2: Aplicación Final
 FROM php:8.4-fpm-alpine

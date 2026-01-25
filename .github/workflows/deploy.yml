@@ -2,12 +2,13 @@ name: Build and Deploy to Hostinger
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
 
 env:
   REGISTRY: ghcr.io
   # Forzamos el nombre a minúsculas para evitar errores de GHCR
   IMAGE_NAME: ${{ github.repository }}
+  APP_ENV: "production"
 
 jobs:
   build:
@@ -51,30 +52,37 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          provenance: false # Acelera el proceso de push
 
   deploy:
     needs: build
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
 
+    env:
+      CONTAINER_NAME: "workout_app"
+
     steps:
-      - name: Deploy to Hostinger via SSH
-        uses: appleboy/ssh-action@v1.0.0
+      - name: Deploy to VPS via SSH
+        uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ secrets.PORT }}
           script: |
-            cd ${{ secrets.PROJECT_PATH }}
+            echo "Iniciando despliegue en el servidor..."
 
-            # 1. Login usando el PAT (No el GITHUB_TOKEN temporal)
-            echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+            # Define el nombre completo de la imagen en el VPS
+            IMAGE_NAME=ghcr.io/${{ github.repository }}:latest
+            CONTAINER_NAME=${{ env.CONTAINER_NAME }}
 
-            # 2. Pull solo de la imagen de la app (el resto son oficiales)
+            # Login usando el PAT (No el GITHUB_TOKEN temporal)
+            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+            # Pull solo de la imagen de la app (el resto son oficiales)
             docker-compose pull app
 
-            # # 3. Backup de seguridad (usando variables del .env local del server)
+            # Backup de seguridad (usando variables del .env local del server)
             # # Exportamos PGPASSWORD para que pg_dump no pida pass
             # export $(grep -v '^#' .env | xargs)
             # docker-compose exec -T db sh -c "PGPASSWORD=$DB_PASSWORD pg_dump -U $DB_USERNAME $DB_DATABASE" > backup_latest.sql || echo "Backup skip"
