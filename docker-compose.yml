@@ -1,14 +1,15 @@
-version: '3.8'
-
 services:
   app:
-    image: ghcr.io/${GITHUB_REPOSITORY}:${IMAGE_TAG:-latest}
+    # Asegúrate de poner el nombre de tu usuario/repo en minúsculas
+    image: ghcr.io/usuario/proyecto/app:latest
     container_name: laravel_app
     restart: unless-stopped
     working_dir: /var/www/html
     environment:
       - APP_ENV=${APP_ENV:-production}
+      - APP_KEY=${APP_KEY}
       - APP_DEBUG=${APP_DEBUG:-false}
+      - DB_CONNECTION=pgsql
       - DB_HOST=db
       - DB_PORT=5432
       - DB_DATABASE=${DB_DATABASE}
@@ -16,12 +17,13 @@ services:
       - DB_PASSWORD=${DB_PASSWORD}
       - REDIS_HOST=redis
       - REDIS_PORT=6379
+      - REDIS_PASSWORD=${REDIS_PASSWORD} # IMPORTANTE: Añadido para coincidir con el servicio redis
     volumes:
       - storage_data:/var/www/html/storage
     networks:
       - laravel
     ports:
-      - "127.0.0.1:8000:80"
+      - "8000:80" # Cambiado a 8000 para que Hostinger/Nginx lo use como upstream
     depends_on:
       db:
         condition: service_healthy
@@ -36,15 +38,13 @@ services:
       POSTGRES_DB: ${DB_DATABASE}
       POSTGRES_USER: ${DB_USERNAME}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
-      PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - laravel
-    ports:
-      - "127.0.0.1:5432:5432"
+    # Eliminado puerto 5432 para que la DB sea privada interna
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME} -d ${DB_DATABASE}"]
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -53,13 +53,14 @@ services:
     image: redis:7-alpine
     container_name: laravel_redis
     restart: unless-stopped
-    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-}
+    # Se añade la lógica de password si existe, sino inicia sin ella
+    command: >
+      sh -c "redis-server --appendonly yes
+      ${REDIS_PASSWORD:+--requirepass $REDIS_PASSWORD}"
     volumes:
       - redis_data:/data
     networks:
       - laravel
-    ports:
-      - "${REDIS_PORT:-6379}:6379"
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
@@ -72,8 +73,5 @@ networks:
 
 volumes:
   postgres_data:
-    driver: local
   redis_data:
-    driver: local
   storage_data:
-    driver: local
