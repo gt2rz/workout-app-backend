@@ -145,7 +145,7 @@ jobs:
                 networks:
                   - laravel
                 ports:
-                  - "0.0.0.0:8000:80" # Cambiado a 8000 para que Hostinger/Nginx lo use como upstream
+                  - "8000:80" # Cambiado a 8000 para que Hostinger/Nginx lo use como upstream
                 depends_on:
                   db:
                     condition: service_healthy
