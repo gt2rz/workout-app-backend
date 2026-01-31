@@ -78,7 +78,19 @@ class ProfileResource extends JsonResource
             'preferences' => $this->preferences ?? [],
             // 'membership' => $this->membership ?? null,
             // 'stats' => $this->stats ?? null,
-            // 'menu' => $this->menu ?? null,
+
+            // this is static for now
+           'menu' => [
+                'show_edit_profile' => true,
+                'show_change_password' => true,
+                'show_membership' => true,
+                'show_preferences' => true,
+                'show_statistics' => true,
+                'show_logout' => true,
+                'show_delete_account' => false,
+                'show_goals' => true,
+                'show_routine_history' => true,
+            ]
         ];
     }
 }
