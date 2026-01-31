@@ -10,15 +10,23 @@ class ProfileController extends Controller
 {
     public function getProfile(Request $request) {
         try {
-            //code...
             $user = $request->user();
-            $user->load('profile');
-            return (new ProfileResource($user))
-            ->additional([
-                'status' => 'success',
-            ]);
+            $profile = $user->profile()->with(['user', 'userPreferences'])->first();
+            if (!$profile) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Perfil no encontrado.'
+                ], 404);
+            }
+            return (new ProfileResource($profile))
+                ->additional([
+                    'status' => 'success',
+                ]);
         } catch (\Throwable $th) {
-            dd($th);
+            return response()->json([
+                'status' => 'error',
+                'message' => $th->getMessage(),
+            ], 500);
         }
     }
 

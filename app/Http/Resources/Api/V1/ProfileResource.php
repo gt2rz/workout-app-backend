@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
 
+use function Pest\Laravel\json;
+
 class ProfileResource extends JsonResource
 {
     /**
@@ -75,7 +77,10 @@ class ProfileResource extends JsonResource
             'avatar' => $this->avatar_url ?? null,
             'created_at' => optional($this->created_at)->toIso8601String(),
             'updated_at' => optional($this->updated_at)->toIso8601String(),
-            'preferences' => $this->preferences ?? [],
+            'preferences' => [
+                'notifications' => $this->getPreference('notifications', true),
+                'dark_mode' => $this->getPreference('dark_mode', false),
+            ],
             // 'membership' => $this->membership ?? null,
             // 'stats' => $this->stats ?? null,
 
@@ -92,5 +97,16 @@ class ProfileResource extends JsonResource
                 'show_routine_history' => true,
             ]
         ];
+    }
+
+    private function getPreference($key, $default = null)
+    {
+        $prefs = [];
+        if ($this->userPreferences && $this->userPreferences->preferences) {
+            $prefs = is_array($this->userPreferences->preferences)
+                ? $this->userPreferences->preferences
+                : json_decode($this->userPreferences->preferences, true);
+        }
+        return array_key_exists($key, $prefs) ? $prefs[$key] : $default;
     }
 }
