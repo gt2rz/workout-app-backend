@@ -9,12 +9,17 @@ use Illuminate\Http\Request;
 class ProfileController extends Controller
 {
     public function getProfile(Request $request) {
-        $user = $request->user();
-
-        return (new ProfileResource($user))
-        ->additional([
-            'status' => 'success',
-        ]);
+        try {
+            //code...
+            $user = $request->user();
+            $user->load('profile');
+            return (new ProfileResource($user))
+            ->additional([
+                'status' => 'success',
+            ]);
+        } catch (\Throwable $th) {
+            dd($th);
+        }
     }
 
 }

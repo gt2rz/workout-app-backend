@@ -1,0 +1,66 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Definir alias sail",
+            "type": "shell",
+            "command": "alias sail='sh $([ -f sail ] && echo sail || echo vendor/bin/sail)'",
+            "presentation": {
+                "reveal": "never"
+            },
+            "runOptions": {
+                "runOn": "folderOpen"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "⛵ Sail: Up (API)",
+            "type": "shell",
+            "command": "./vendor/bin/sail up -d",
+            "presentation": {
+                "group": "api-dev",
+                "panel": "dedicated",
+                "reveal": "always"
+            },
+            "runOptions": {
+                "runOn": "folderOpen"
+            },
+            "icon": { "id": "server", "color": "terminal.ansiCyan" },
+            "problemMatcher": []
+        },
+        {
+            "label": "🧹 Sail: Limpiar Logs",
+            "type": "shell",
+            "command": "rm storage/logs/*.log || true && echo 'Logs limpiados con éxito'",
+            "presentation": {
+                "group": "api-dev",
+                "panel": "dedicated",
+                "reveal": "silent"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "📜 Sail: Ver Logs en Tiempo Real",
+            "type": "shell",
+            "command": "./vendor/bin/sail artisan tail",
+            "dependsOn": ["⛵ Sail: Up (API)", "🧹 Sail: Limpiar Logs"],
+            "runOptions": {
+                "runOn": "folderOpen"
+            },
+            "presentation": {
+                "group": "api-dev",
+                "panel": "dedicated",
+                "focus": false
+            },
+            "icon": { "id": "list-ordered", "color": "terminal.ansiYellow" },
+            "problemMatcher": []
+        },
+        {
+            "label": "🐘 Sail: Migraciones",
+            "type": "shell",
+            "command": "./vendor/bin/sail artisan migrate",
+            "group": "build",
+            "presentation": { "panel": "shared" }
+        }
+    ]
+}
