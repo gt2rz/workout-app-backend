@@ -11,7 +11,7 @@ class ProfileController extends Controller
     public function getProfile(Request $request) {
         try {
             $user = $request->user();
-            $profile = $user->profile()->with(['user', 'userPreferences'])->first();
+            $profile = $user->profile()->with(['user.membership', 'userPreferences'])->first();
             if (!$profile) {
                 return response()->json([
                     'status' => 'error',

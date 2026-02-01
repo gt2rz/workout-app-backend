@@ -51,4 +51,23 @@ class User extends Authenticatable
     {
         return $this->hasOne(Profile::class);
     }
+
+
+    public function membership()
+    {
+        return $this->hasOneThrough(
+            Membership::class,
+            UserMembership::class,
+            'user_id',        // Foreign key on user_memberships
+            'id',             // Foreign key on memberships
+            'id',             // Local key on users
+            'membership_id'   // Local key on user_memberships
+        )->where('user_memberships.status', true);
+    }
+
+    public function preferences()
+    {
+        return $this->hasOne(UserPreferences::class);
+    }
+
 }
