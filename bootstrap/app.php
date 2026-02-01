@@ -30,6 +30,8 @@ return Application::configure(basePath: dirname(__DIR__))
                         ->group(function () {
                             Route::prefix('profile')
                                 ->group(base_path('routes/modules/profile.php'));
+                            Route::prefix('home')
+                                ->group(base_path('routes/modules/home.php'));
                         });
                 });
         },
