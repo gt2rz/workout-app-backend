@@ -19,10 +19,13 @@ class HomeResource extends JsonResource
         return [
             'greeting' => [
                 'enabled' => true,
-                'today' => 'Domingo, 1 de Febrero',
-                'greeting_message' => $this->getGreetingMessage(),
+                'today' => now()->locale('es')->isoFormat('dddd, D [de] MMMM'),
+                'greeting' => [
+                    'message' => $this->getGreetingMessage(),
+                    'user_name' => $this->firstName(),
+                ]
             ],
-            'weekly_overview' => [
+            'weekly_overview' => [ 
                 'enabled' => true,
                 'title' => 'Tu Semana',
                 'subtitle' => 'Planifica tus entrenamientos y actividades.',
@@ -131,11 +134,11 @@ class HomeResource extends JsonResource
         $hour = now()->hour;
 
         if ($hour >= 5 && $hour < 12) {
-            return '¡Buenos días, '.$this->firstName().'!';
+            return '¡Buenos días, {{user_name}}!';
         } elseif ($hour >= 12 && $hour < 18) {
-            return '¡Buenas tardes, '.$this->firstName().'!';
+            return '¡Buenas tardes, {{user_name}}!';
         } else {
-            return '¡Buenas noches, '.$this->firstName().'!';
+            return '¡Buenas noches, {{user_name}}!';
         }
     }
 
