@@ -2,7 +2,16 @@
     "agents": [
         "cursor",
         "gemini",
-        "opencode"
+        "opencode",
+        "copilot",
+        "claude_code",
+        "codex"
     ],
-    "guidelines": []
+    "guidelines": true,
+    "herd_mcp": false,
+    "mcp": true,
+    "sail": true,
+    "skills": [
+        "pest-testing"
+    ]
 }

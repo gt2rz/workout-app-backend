@@ -38,7 +38,7 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         // Forzar HTTPS en todas las solicitudes (excepto en entorno local)
-        // $middleware->append(ForceHttps::class);
+        $middleware->append(ForceHttps::class);
 
         // Esto asegura que Laravel confíe en los headers de HTTPS
         // enviados por proxies como Cloudflare o Nginx
