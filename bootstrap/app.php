@@ -16,10 +16,7 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
         then: function () {
-            // Definir el rate limiter 'api' para Laravel 12
-            RateLimiter::for('api', function ($request) {
-                return Limit::perMinute(60)->by(optional($request->user())->id ?: $request->ip());
-            });
+            // Rate limiting ahora se gestiona en RateLimiterServiceProvider
 
             Route::prefix('api/v1')->middleware([EnsureApiKeyIsValid::class, ForceHttps::class, 'throttle:api'])
                 ->group(function () {

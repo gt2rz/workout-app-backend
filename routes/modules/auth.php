@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Route;
 
 // Rutas públicas
 Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login', [AuthController::class, 'login']);
+Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:login');
 
 // Rutas protegidas
 Route::middleware('auth:sanctum')->group(function () {
