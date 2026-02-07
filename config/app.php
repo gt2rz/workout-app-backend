@@ -17,6 +17,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Application Scheme (Deep Link)
+    |--------------------------------------------------------------------------
+    |
+    | This value is the custom URL scheme for deep linking to your mobile app.
+    | Used in notifications and emails to redirect users to specific screens.
+    |
+    */
+
+    'scheme' => env('APP_SCHEME', 'workoutapp'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Environment
     |--------------------------------------------------------------------------
     |

@@ -34,17 +34,12 @@ class ResetPasswordNotification extends Notification
 
     /**
      * Genera la URL para restablecer la contraseña
-     * Para API/App móvil, usa deep link o URL del frontend
+     * Deep link compatible con Expo
      */
     protected function resetUrl(object $notifiable): string
     {
-        // Para app móvil: return "workoutapp://reset-password?token={$this->token}&email={$notifiable->email}";
-        // Para frontend web: return config('app.frontend_url') . "/reset-password?token={$this->token}&email={$notifiable->email}";
-
-        // Por ahora, devuelve la URL del backend API
-        return url(route('password.reset', [
-            'token' => $this->token,
-            'email' => $notifiable->email,
-        ], false));
+        $scheme = config('app.scheme', 'workoutapp');
+        
+        return "{$scheme}://reset-password?token={$this->token}&email={$notifiable->email}";
     }
 }
