@@ -1,6 +1,6 @@
 vars {
   base_url: http://localhost:80/
-  x-api-key: sk_9kz4Q62LE6tWgNFcFifXopSKnl1scjpw
+  x-api-key: YOUR_API_KEY_HERE
 }
 vars:secret [
   access_token
