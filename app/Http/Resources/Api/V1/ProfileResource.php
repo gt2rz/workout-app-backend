@@ -4,9 +4,6 @@ namespace App\Http\Resources\Api\V1;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Support\Facades\Auth;
-
-use function Pest\Laravel\json;
 
 class ProfileResource extends JsonResource
 {
@@ -20,7 +17,7 @@ class ProfileResource extends JsonResource
         return [
             'id' => $this->id,
             'user_id' => $this->user_id,
-            'user' => $this->whenLoaded('user', fn() => new UserResource($this->user)),
+            'user' => $this->whenLoaded('user', fn () => new UserResource($this->user)),
             'bio' => $this->bio ?? '',
             'avatar' => $this->avatar_url ?? null,
             'created_at' => optional($this->created_at)->toIso8601String(),
@@ -30,7 +27,7 @@ class ProfileResource extends JsonResource
             'stats' => $this->getStats(),
 
             // this is static for now
-           'menu' => $this->getMenuOptions()
+            'menu' => $this->getMenuOptions(),
         ];
     }
 
@@ -41,8 +38,7 @@ class ProfileResource extends JsonResource
             return is_array($this->userPreferences->preferences)
                 ? $this->userPreferences->preferences
                 : json_decode($this->userPreferences->preferences, true);
-        }
-        else {
+        } else {
             // Default preferences
             return [
                 'notifications' => true,
@@ -56,6 +52,7 @@ class ProfileResource extends JsonResource
         if ($this->user && $this->user->membership) {
             return $this->user->membership;
         }
+
         return null;
     }
 
@@ -74,9 +71,9 @@ class ProfileResource extends JsonResource
                     '2025-10' => '104.5 kg',
                     '2025-11' => '104 kg',
                     '2025-12' => '103.8 kg',
-                    '2026-01' => '103.5 kg'
-                ]
-            ]
+                    '2026-01' => '103.5 kg',
+                ],
+            ],
         ];
     }
 

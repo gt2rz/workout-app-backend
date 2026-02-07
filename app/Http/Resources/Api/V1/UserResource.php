@@ -19,7 +19,7 @@ class UserResource extends JsonResource
             'name' => $this->name,
             'email' => $this->email,
             // Agregamos un campo calculado como ejemplo (tendencia 2026: datos enriquecidos)
-            'initials' => collect(explode(' ', $this->name))->map(fn($n) => mb_substr($n, 0, 1))->join(''),
+            'initials' => collect(explode(' ', $this->name))->map(fn ($n) => mb_substr($n, 0, 1))->join(''),
             'registered_at' => $this->created_at->toIso8601String(),
         ];
     }

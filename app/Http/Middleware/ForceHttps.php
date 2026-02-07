@@ -15,10 +15,10 @@ class ForceHttps
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (!$request->secure() && !app()->isLocal()) {
+        if (! $request->secure() && ! app()->isLocal()) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Secure connection (HTTPS) is required.'
+                'message' => 'Secure connection (HTTPS) is required.',
             ], 403);
         }
 

@@ -2,9 +2,9 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\ServiceProvider;
 
 class RateLimiterServiceProvider extends ServiceProvider
 {
@@ -32,7 +32,7 @@ class RateLimiterServiceProvider extends ServiceProvider
                 ->response(function () {
                     return response()->json([
                         'status' => 'error',
-                        'message' => 'Too many login attempts. Please try again later.'
+                        'message' => 'Too many login attempts. Please try again later.',
                     ], 429);
                 });
         });

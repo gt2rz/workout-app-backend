@@ -21,7 +21,7 @@ class HealthController extends Controller
             $dbStatus = 'connected';
         } catch (\Exception $e) {
             $dbStatus = 'disconnected';
-            Log::error("Health Check Failure: " . $e->getMessage());
+            Log::error('Health Check Failure: '.$e->getMessage());
         }
 
         try {
@@ -29,7 +29,7 @@ class HealthController extends Controller
             $redisStatus = 'connected';
         } catch (\Exception $e) {
             $redisStatus = 'disconnected';
-            Log::error("Health Check Failure (Redis): " . $e->getMessage());
+            Log::error('Health Check Failure (Redis): '.$e->getMessage());
         }
 
         return response()->json([
@@ -41,7 +41,7 @@ class HealthController extends Controller
                 'environment' => config('app.env'),
                 'checks' => [
                     'database' => $dbStatus,
-                    'cache'    => $redisStatus,
+                    'cache' => $redisStatus,
                 ],
             ],
             'timestamp' => now()->toIso8601String(),

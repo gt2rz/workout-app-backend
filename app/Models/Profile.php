@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class Profile extends Model
 {
-
     protected $fillable = [
         'user_id',
         'bio',
@@ -19,7 +18,7 @@ class Profile extends Model
         return $this->belongsTo(User::class);
     }
 
-     public function userPreferences()
+    public function userPreferences()
     {
         return $this->hasOne(UserPreferences::class, 'user_id', 'user_id');
     }

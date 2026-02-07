@@ -8,16 +8,18 @@ use Illuminate\Http\Request;
 
 class ProfileController extends Controller
 {
-    public function __invoke(Request $request) {
+    public function __invoke(Request $request)
+    {
         try {
             $user = $request->user();
             $profile = $user->profile()->with(['user.membership', 'userPreferences'])->first();
-            if (!$profile) {
+            if (! $profile) {
                 return response()->json([
                     'status' => 'error',
-                    'message' => 'Perfil no encontrado.'
+                    'message' => 'Perfil no encontrado.',
                 ], 404);
             }
+
             return (new ProfileResource($profile))
                 ->additional([
                     'status' => 'success',
@@ -29,5 +31,4 @@ class ProfileController extends Controller
             ], 500);
         }
     }
-
 }

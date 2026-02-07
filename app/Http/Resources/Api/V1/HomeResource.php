@@ -23,9 +23,9 @@ class HomeResource extends JsonResource
                 'greeting' => [
                     'message' => $this->getGreetingMessage(),
                     'user_name' => $this->firstName(),
-                ]
+                ],
             ],
-            'weekly_overview' => [ 
+            'weekly_overview' => [
                 'enabled' => true,
                 'title' => 'Tu Semana',
                 'subtitle' => 'Planifica tus entrenamientos y actividades.',
@@ -43,8 +43,8 @@ class HomeResource extends JsonResource
                     'image_url' => 'https://example.com/images/workout_chest_triceps.png',
                     'type' => 'Dia de Empuje',
                     'type_icon_url' => 'https://example.com/icons/push_day.png',
-                    'duration_minutes' => "45 minutos",
-                    'exercises_count' => "8 ejercicios",
+                    'duration_minutes' => '45 minutos',
+                    'exercises_count' => '8 ejercicios',
                 ],
                 'no_workout' => [
                     'title' => '¡Descanso hoy!',
@@ -145,6 +145,7 @@ class HomeResource extends JsonResource
     private function firstName(): string
     {
         $names = explode(' ', trim($this->resource->name));
+
         return $names[0] ?? $this->resource->name;
     }
 
@@ -155,9 +156,9 @@ class HomeResource extends JsonResource
 
         return collect(CarbonPeriod::create($start, $end))->map(function (Carbon $date) {
             return [
-                'day'      => $date->locale('es')->minDayName, // 'lun', 'mar', etc.
-                'label'     => $date->format('d'),           // '01', '02', etc.
-                'date'      => $date->toDateString(),      // '2024-02-01', etc.
+                'day' => $date->locale('es')->minDayName, // 'lun', 'mar', etc.
+                'label' => $date->format('d'),           // '01', '02', etc.
+                'date' => $date->toDateString(),      // '2024-02-01', etc.
                 'is_today' => $date->isToday(),             // true o false
             ];
         })->toArray();
