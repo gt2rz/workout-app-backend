@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\Api\V1\Auth\PasswordResetController;
 use App\Http\Controllers\Api\V1\HealthController;
 use Illuminate\Support\Facades\Route;
 
@@ -33,13 +32,5 @@ Route::prefix('v1')->group(function () {
         return response()->json([
             'message' => 'API documentation is available at /api/v1/docs/swagger or /api/v1/docs/redoc',
         ], 200);
-    });
-
-    /**
-     * Password Reset Routes
-     */
-    Route::prefix('auth')->group(function () {
-        Route::post('/password/forgot', [PasswordResetController::class, 'forgotPassword']);
-        Route::post('/password/reset', [PasswordResetController::class, 'resetPassword']);
     });
 });

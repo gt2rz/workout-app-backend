@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ChangePasswordRequest;
 use App\Http\Requests\ForgotPasswordRequest;
 use App\Http\Requests\ResetPasswordRequest;
 use Illuminate\Auth\Events\PasswordReset;
@@ -64,6 +65,25 @@ class PasswordResetController extends Controller
             'status' => 'error',
             'message' => $this->getErrorMessage($status),
         ], 400);
+    }
+
+    /**
+     * Cambia la contraseña del usuario autenticado
+     */
+    public function changePassword(ChangePasswordRequest $request): JsonResponse
+    {
+        $user = $request->user();
+
+        $user->update([
+            'password' => Hash::make($request->password),
+        ]);
+
+        event(new PasswordReset($user));
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Tu contraseña ha sido cambiada exitosamente.',
+        ], 200);
     }
 
     /**
