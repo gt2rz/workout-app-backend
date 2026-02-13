@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Api\V1;
 
+use App\Services\Workout\WorkoutTodayService;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Http\Request;
@@ -16,6 +17,9 @@ class HomeResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $todayWorkout = app(WorkoutTodayService::class)->getWorkoutForToday($this->resource);
+        $hasWorkout = $todayWorkout !== null;
+
         return [
             'greeting' => [
                 'enabled' => true,
@@ -35,22 +39,19 @@ class HomeResource extends JsonResource
             ],
             'workout_today' => [
                 'enabled' => true,
-                'has_workout' => true,
-                'workout' => [
-                    'id' => 1,
-                    'title' => 'Rutina de Pecho y Tríceps',
-                    'subtitle' => 'Enfocate en la técnica. ¡Vamos con todo!',
-                    'image_url' => 'https://example.com/images/workout_chest_triceps.png',
-                    'type' => 'Dia de Empuje',
-                    'type_icon_url' => 'https://example.com/icons/push_day.png',
-                    'duration_minutes' => '45 minutos',
-                    'exercises_count' => '8 ejercicios',
-                ],
-                'no_workout' => [
-                    'title' => '¡Descanso hoy!',
-                    'subtitle' => 'Recarga energías para tu próxima sesión.',
-                    'image_url' => 'https://example.com/images/rest_day.png',
-                ],
+                'has_workout' => $hasWorkout,
+                'workout' => $this->when(
+                    $hasWorkout,
+                    fn () => new WorkoutTodayResource($todayWorkout)
+                ),
+                'no_workout' => $this->when(
+                    ! $hasWorkout,
+                    fn () => [
+                        'title' => '¡Descanso hoy!',
+                        'subtitle' => 'Recarga energías para tu próxima sesión.',
+                        'image_url' => null,
+                    ]
+                ),
             ],
             'progress_overview' => [
                 'enabled' => true,

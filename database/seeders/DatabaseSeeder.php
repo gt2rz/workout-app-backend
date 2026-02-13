@@ -3,11 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-use Database\Seeders\ExerciseSeeder;
-use Database\Seeders\ExerciseTypeSeeder;
-use Database\Seeders\MesocycleTypeSeeder;
-use Database\Seeders\MuscleGroupSeeder;
-use Database\Seeders\SplitTypeSeeder;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 

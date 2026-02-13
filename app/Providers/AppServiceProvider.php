@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Models\WorkoutSession;
+use App\Observers\WorkoutSessionObserver;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 
@@ -23,5 +25,7 @@ class AppServiceProvider extends ServiceProvider
         if (! app()->isLocal()) {
             URL::forceScheme('https');
         }
+
+        WorkoutSession::observe(WorkoutSessionObserver::class);
     }
 }

@@ -70,6 +70,11 @@ class User extends Authenticatable
         return $this->hasOne(UserPreferences::class);
     }
 
+    public function workoutSessions()
+    {
+        return $this->hasMany(WorkoutSession::class);
+    }
+
     /**
      * Envía la notificación de restablecimiento de contraseña
      */
