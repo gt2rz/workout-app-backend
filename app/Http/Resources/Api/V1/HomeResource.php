@@ -49,7 +49,7 @@ class HomeResource extends JsonResource
                     fn () => [
                         'title' => '¡Descanso hoy!',
                         'subtitle' => 'Recarga energías para tu próxima sesión.',
-                        'image_url' => null,
+                        'image_url' => 'https://gt2rz.cloud/workouts/not_workout-day.webp',
                     ]
                 ),
             ],
@@ -157,7 +157,7 @@ class HomeResource extends JsonResource
 
         return collect(CarbonPeriod::create($start, $end))->map(function (Carbon $date) {
             return [
-                'day' => $date->locale('es')->minDayName, // 'lun', 'mar', etc.
+                'day' => ucwords($date->locale('es')->minDayName), // 'Lun', 'Mar', etc.
                 'label' => $date->format('d'),           // '01', '02', etc.
                 'date' => $date->toDateString(),      // '2024-02-01', etc.
                 'is_today' => $date->isToday(),             // true o false
