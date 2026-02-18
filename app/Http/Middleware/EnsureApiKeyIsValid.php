@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Exceptions\Auth\InvalidApiKeyException;
 use App\Models\ApiKey;
 use Closure;
 use Illuminate\Http\Request;
@@ -18,10 +19,7 @@ class EnsureApiKeyIsValid
         $apiKey = $request->header('X-API-KEY');
 
         if (! $apiKey || ! ApiKey::findActive($apiKey)) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Invalid or inactive API Key.',
-            ], 401);
+            throw new InvalidApiKeyException;
         }
 
         return $next($request);

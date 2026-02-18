@@ -34,20 +34,22 @@ test('home endpoint returns workout scheduled for today', function () {
     $response = $this->getJson('/api/v1/home');
 
     $response->assertStatus(200)
-        ->assertJsonPath('workout_today.has_workout', true)
-        ->assertJsonPath('workout_today.workout.id', $session->id)
+        ->assertJsonPath('data.workout_today.has_workout', true)
+        ->assertJsonPath('data.workout_today.workout.id', $session->id)
         ->assertJsonStructure([
-            'workout_today' => [
-                'enabled',
-                'has_workout',
-                'workout' => [
-                    'id',
-                    'title',
-                    'subtitle',
-                    'duration_minutes',
-                    'exercises_count',
-                    'status',
-                    'exercises',
+            'data' => [
+                'workout_today' => [
+                    'enabled',
+                    'has_workout',
+                    'workout' => [
+                        'id',
+                        'title',
+                        'subtitle',
+                        'duration_minutes',
+                        'exercises_count',
+                        'status',
+                        'exercises',
+                    ],
                 ],
             ],
         ]);
@@ -64,8 +66,8 @@ test('home endpoint returns no workout when none scheduled for today', function 
 
     $response->assertStatus(200);
 
-    expect($response->json('workout_today.has_workout'))->toBeFalse();
-    expect($response->json('workout_today.no_workout.title'))->toBe('¡Descanso hoy!');
+    expect($response->json('data.workout_today.has_workout'))->toBeFalse();
+    expect($response->json('data.workout_today.no_workout.title'))->toBe('¡Descanso hoy!');
 });
 
 test('home endpoint does not return completed workout', function () {
@@ -77,7 +79,7 @@ test('home endpoint does not return completed workout', function () {
     $response = $this->getJson('/api/v1/home');
 
     $response->assertStatus(200);
-    expect($response->json('workout_today.has_workout'))->toBeFalse();
+    expect($response->json('data.workout_today.has_workout'))->toBeFalse();
 });
 
 test('home endpoint does not return skipped workout', function () {
@@ -91,7 +93,7 @@ test('home endpoint does not return skipped workout', function () {
     $response = $this->getJson('/api/v1/home');
 
     $response->assertStatus(200);
-    expect($response->json('workout_today.has_workout'))->toBeFalse();
+    expect($response->json('data.workout_today.has_workout'))->toBeFalse();
 });
 
 test('workout today caches correctly', function () {
@@ -154,7 +156,7 @@ test('workout formats duration in spanish', function () {
 
     $response = $this->getJson('/api/v1/home');
 
-    $response->assertJsonPath('workout_today.workout.duration_minutes', '45 minutos');
+    $response->assertJsonPath('data.workout_today.workout.duration_minutes', '45 minutos');
 });
 
 test('workout formats exercises count in spanish', function () {
@@ -177,5 +179,5 @@ test('workout formats exercises count in spanish', function () {
 
     $response = $this->getJson('/api/v1/home');
 
-    $response->assertJsonPath('workout_today.workout.exercises_count', '3 ejercicios');
+    $response->assertJsonPath('data.workout_today.workout.exercises_count', '3 ejercicios');
 });

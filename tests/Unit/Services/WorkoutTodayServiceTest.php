@@ -1,11 +1,9 @@
 <?php
 
+use App\Features\Workout\Services\WorkoutTodayService;
 use App\Models\User;
 use App\Models\WorkoutSession;
-use App\Services\Workout\WorkoutTodayService;
 use Illuminate\Support\Facades\Cache;
-
-uses(Tests\TestCase::class);
 
 beforeEach(function () {
     $this->service = app(WorkoutTodayService::class);

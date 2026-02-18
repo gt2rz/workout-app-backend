@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\Api\V1\HealthController;
+use App\Features\Health\Controllers\HealthController;
 use Illuminate\Support\Facades\Route;
 
 /**
