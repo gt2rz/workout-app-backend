@@ -13,6 +13,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Exceptions\ThrottleRequestsException;
+use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Validation\ValidationException;
 
@@ -33,6 +34,7 @@ return Application::configure(basePath: dirname(__DIR__))
                 IdempotencyMiddleware::class,
                 ConditionalResponse::class,
                 'throttle:api',
+                SubstituteBindings::class,
             ])
                 ->group(function () use ($featureRoutes) {
                     foreach ($featureRoutes as $routeFile) {

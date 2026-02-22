@@ -70,6 +70,11 @@ class User extends Authenticatable
         return $this->hasOne(UserPreferences::class);
     }
 
+    public function macrocycles()
+    {
+        return $this->hasMany(Macrocycle::class)->latest();
+    }
+
     public function workoutSessions()
     {
         return $this->hasMany(WorkoutSession::class);
