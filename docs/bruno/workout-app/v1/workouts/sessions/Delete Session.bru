@@ -1,0 +1,16 @@
+meta {
+  name: Delete Session
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{base_url}}api/v1/workouts/sessions/:session
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

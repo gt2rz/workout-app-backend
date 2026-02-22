@@ -1,0 +1,26 @@
+meta {
+  name: Create Session
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{base_url}}api/v1/workouts/sessions
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "microcycle_id": null,
+    "workout_template_id": null,
+    "scheduled_date": "2026-03-01",
+    "notes": null,
+    "status": "scheduled"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

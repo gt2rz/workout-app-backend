@@ -1,0 +1,27 @@
+meta {
+  name: Update Session
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{base_url}}api/v1/workouts/sessions/:session
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "scheduled_date": "2026-03-01",
+    "completed_at": null,
+    "duration_minutes": null,
+    "overall_rpe": null,
+    "status": "scheduled",
+    "notes": null
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

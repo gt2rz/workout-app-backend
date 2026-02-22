@@ -1,0 +1,22 @@
+meta {
+  name: List Sessions
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{base_url}}api/v1/workouts/sessions
+  body: none
+  auth: inherit
+}
+
+params:query {
+  status:
+  date:
+  microcycle_id:
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

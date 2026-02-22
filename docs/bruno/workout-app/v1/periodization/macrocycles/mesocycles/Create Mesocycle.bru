@@ -1,0 +1,28 @@
+meta {
+  name: Create Mesocycle
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{base_url}}api/v1/periodization/macrocycles/:macrocycle/mesocycles
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "mesocycle_type_id": 1,
+    "split_type_id": 1,
+    "order": 1,
+    "start_week": 1,
+    "duration_weeks": 6,
+    "deload_weeks": [6],
+    "notes": null
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

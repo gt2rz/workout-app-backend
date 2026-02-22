@@ -1,0 +1,28 @@
+meta {
+  name: Update Macrocycle
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{base_url}}api/v1/periodization/macrocycles/:macrocycle
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "name": "Temporada 2026",
+    "goal": "Hipertrofia general",
+    "start_date": "2026-03-01",
+    "end_date": "2026-08-31",
+    "duration_weeks": 26,
+    "is_active": true,
+    "notes": null
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
