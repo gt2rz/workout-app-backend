@@ -1,0 +1,11 @@
+{
+  "model": "claude-sonnet-4-6",
+  "max_iterations": 20,
+  "feature": "Periodization",
+  "controllers_dir": "app/Features/{feature}/Controllers",
+  "requests_dir": "app/Features/{feature}/Requests",
+  "existing_tests_dir": "tests/Feature",
+  "output_dir": "tests/Feature/{feature}",
+  "test_framework": "pest4",
+  "log_file": ".agents/logs/test-generator.log"
+}

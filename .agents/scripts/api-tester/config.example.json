@@ -1,0 +1,15 @@
+{
+  "model": "claude-sonnet-4-6",
+  "max_iterations": 25,
+  "base_url": "http://localhost:8083/",
+  "collection_path": "docs/bruno/workout-app/v1",
+  "expected_status": {
+    "index": 200,
+    "store": 201,
+    "show": 200,
+    "update": 200,
+    "destroy": 204
+  },
+  "report_output": ".agents/reports/api-test-{date}.md",
+  "log_file": ".agents/logs/api-tester.log"
+}

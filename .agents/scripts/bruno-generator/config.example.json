@@ -1,0 +1,9 @@
+{
+  "model": "claude-sonnet-4-6",
+  "max_iterations": 20,
+  "routes_dir": "app/Features",
+  "output_dir": "docs/bruno/workout-app/v1",
+  "base_url_variable": "base_url",
+  "auth_mode": "inherit",
+  "log_file": ".agents/logs/bruno-generator.log"
+}
